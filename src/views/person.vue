@@ -17,7 +17,6 @@
           </div>
           <div v-if="!is_open_pay" class="open_box">
             <div class="open_tip">暂未开通E钱包</div>
-            <!-- <van-button class="open_btn" @click="openPay">点击开通</van-button> -->
           </div>
           <div v-else>
             <img class="qrcode" :src="codeUrl" alt @click="codeBig" />
@@ -26,12 +25,18 @@
         </div>
         <div class="box_footer" v-if="!is_open_pay" @click="openPay">
           <van-button size="small" icon="after-sale" class="open_btn_min">开通e钱包</van-button>
-          <img class="right_icon" src="@/../images/icon／right@2x (2).png" alt="">
+          <van-icon class="right_icon" name="arrow" />
         </div>
         <div class="box_footer" v-else>
           <img class="money_icon" src="@/../images/money.png" alt />
           <div class="box_text">零钱</div>
         </div>
+      </div>
+    </div>
+    <div class="small_box">
+      <div class="small_box_inner" @click="payMedical">
+        <img class="small_box_icon" src="@/../images/small_box_icon1.jpg" alt="">
+        <div class="small_box_title">城乡居民社保医保缴费</div>
       </div>
     </div>
   </div>
@@ -62,7 +67,12 @@ export default {
       this.is_login = !this.is_login;
     },
     openPay() {
-      this.is_open_pay = !this.is_open_pay;
+      this.$router.push({
+        path: '/bind'
+      })
+    },
+    payMedical() {
+      window.location.href = 'http://www.baidu.com'
     },
     codeBig() {
       ImagePreview({
@@ -193,6 +203,7 @@ export default {
 }
 
 .open_btn_min {
+  font-size: 14px;
   height: 28px;
   border-radius: 20px;
   border-width: 0;
@@ -201,7 +212,37 @@ export default {
 }
 
 .right_icon {
-  width: 8px;
   margin-left: auto;
+  color: rgb(1, 98, 166);
+}
+
+.small_box {
+  width: 90%;
+  border-radius: 10px;
+  margin: auto;
+  margin-top: 10px;
+  background-color: rgba(255, 255, 255, .1);
+}
+
+.small_box_inner {
+  width: 90%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: auto;
+  padding: 10px 0;
+}
+
+.small_box_icon {
+  width: 18px;
+  margin-right: 5px;
+}
+
+.small_box_title {
+  font-size: 14px;
+  font-family: PingFangSC-Regular, PingFang SC;
+  font-weight: 400;
+  color: #fff;
+
 }
 </style>
