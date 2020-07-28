@@ -5,7 +5,7 @@
     <van-form @submit="onSubmit" style="margin-top:30px">
       <van-field v-model="query.name" name="持卡人姓名" label="持卡人姓名" placeholder="持卡人姓名" :rules="[{ required: true, message: '请填写持卡人姓名' }]"  left-icon="user-o"/>
       <van-field v-model="query.bankcard" name="银行卡" label="银行卡" placeholder="银行卡" :rules="[{ required: true, message: '请填写银行卡号' }]"  left-icon="ecard-pay"/>
-      <van-field v-model="query.start_date" name="证件签发日期" label="证件签发日期" placeholder="如有效期为永久填9999-12-30）" :rules="[{ required: true, message: '请填写证件签发日期' }]"  left-icon="calender-o"/>
+      <van-field v-model="query.start_date" name="证件签发日期" label="证件签发日期" placeholder="如：1900-01-01" :rules="[{ required: true, message: '请填写证件签发日期' }]"  left-icon="calender-o"/>
       <van-field v-model="query.end_date" name="证件失效日期" label="证件失效日期" placeholder="如有效期为永久填9999-12-30）" :rules="[{ required: true, message: '请填写证件失效日期' }]"  left-icon="calender-o"/>
       <van-field v-model="query.idcard" name="身份证号" label="身份证号" placeholder="身份证号" :rules="[{ required: true, message: '请填写身份证号' }]" left-icon="idcard"/>
       <van-field v-model="query.phone" name="手机号" label="手机号" placeholder="手机号" :rules="[{ required: true, message: '请填写手机号' }]" left-icon="phone-o"/>
