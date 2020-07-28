@@ -25,22 +25,22 @@ export default {
   data() {
     return {
       screenHeight: 0,
-      // query: {
-      //   name: "",
-      //   bankcard:"",
-      //   start_date:"",
-      //   end_date:'',
-      //   idcard: "",
-      //   phone: "",
-      // }
-       query: {
-        name: "test",
-        bankcard:"32183921898483298",
-        start_date:"1999-01-01",
-        end_date:'9999-01-01',
-        idcard: "510703198908051215",
-        phone: "15808168239",
+      query: {
+        name: "",
+        bankcard:"",
+        start_date:"",
+        end_date:'',
+        idcard: "",
+        phone: "",
       }
+      //  query: {
+      //   name: "test",
+      //   bankcard:"32183921898483298",
+      //   start_date:"1999-01-01",
+      //   end_date:'9999-01-01',
+      //   idcard: "510703198908051215",
+      //   phone: "15808168239",
+      // }
     };
   },
   computed: {},
@@ -64,7 +64,7 @@ export default {
         return Toast('请输入正确的手机号码')
       }
       Toast.loading({message: '加载中...',forbidClick: true,});
-      axios.post('https://wa.cihangca.com/sl/open', this.query).then((response) => {
+      axios.post('https://wa.cihangca.com:20010/sl/open', this.query).then((response) => {
         Toast.clear()
         const data = response.data
         if (data.code !== 200) {
