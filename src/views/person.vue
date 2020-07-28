@@ -8,8 +8,8 @@
         </div>
         <div class="box_inner">
           <div class="user_box" v-if="is_login">
-            <img class="user_header_logo" :src="userInfo.avatar" alt />
-            <div class="user_header_text">{{userInfo.nick_name}}</div>
+            <img class="user_header_logo" :src="userInfo.user.avatar" alt />
+            <div class="user_header_text">{{userInfo.user.nick_name}}</div>
           </div>
           <div class="user_box" v-else>
             <img class="user_header_logo" src="@/../images/icon-user@2x.png" alt />
@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import { ImagePreview } from "vant";
+import { ImagePreview, Toast } from "vant";
 
 export default {
   components: {},
@@ -70,25 +70,27 @@ export default {
     getToken(code) {
       if (localStorage.getItem('user_info') !== null) {
         this.is_login = true
-        this.userInfo = JSON.parse(localStorage.getItem('user_info'))
+        this.userInfo.user = JSON.parse(localStorage.getItem('user_info'))
         return
       }
       let data = {
         code: code
       }
-      axios.post('https://wa.cihangca.com:443/sl/wx/login', data).then((response) => {
+      axios.post('https://wa.cihangca.com:20010/sl/wx/login', data).then((response) => {
+        Toast(JSON.stringify(response))
         this.userInfo = response.data.data
         Toast('登录成功')
         this.is_login = true
-        localStorage.setItem('user_info', JSON.stringify(this.userInfo))
+        localStorage.setItem('user_info', JSON.stringify(this.userInfo.user))
         localStorage.setItem('token', this.userInfo.token)
       }).catch((error) => {
         Toast(`登录失败：${JSON.stringify(error)}`)
       })
+      // Toast(code)
     },
     login() {
       if (!this.is_login) {
-        const url = encodeURIComponent("https://wa.cihangca.com/#/my");
+        const url = encodeURIComponent("https://wanan.cihangca.com");
         window.location.replace(
           `https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx9bf461325256f69d&redirect_uri=` +
             url +
