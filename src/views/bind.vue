@@ -18,19 +18,28 @@
 
 <script>
 import { Toast } from 'vant';
+import axios from 'axios'
 
 export default {
   components: {},
   data() {
     return {
       screenHeight: 0,
-      query: {
-        name: "",
-        bankcard:"",
-        start_date:"",
-        end_date:'',
-        idcard: "",
-        phone: "",
+      // query: {
+      //   name: "",
+      //   bankcard:"",
+      //   start_date:"",
+      //   end_date:'',
+      //   idcard: "",
+      //   phone: "",
+      // }
+       query: {
+        name: "test",
+        bankcard:"32183921898483298",
+        start_date:"1999-01-01",
+        end_date:'9999-01-01',
+        idcard: "510703198908051215",
+        phone: "15808168239",
       }
     };
   },
@@ -51,9 +60,21 @@ export default {
       if (!this.isCardNo(this.query.idcard)) {
         return Toast('请输入正确的身份证号码');
       }
-      if (!this.checkPhone(this.query.phone)) {
+      if (this.checkPhone(this.query.phone) === false) {
         return Toast('请输入正确的手机号码')
       }
+      Toast.loading({message: '加载中...',forbidClick: true,});
+      axios.post('https://wa.cihangca.com/sl/open', this.query).then((response) => {
+        Toast.clear()
+        const data = response.data
+        if (data.code !== 200) {
+          Toast(data.msg)
+        }
+      }).catch((error) => {
+          Toast.clear()
+          Toast(JSON.stringify(error))
+          console.log(error)
+        })
     },
      strDateTime(str){
        var r = str.match(/^(\d{1,4})(-|\/)(\d{1,2})\2(\d{1,2})$/);
@@ -62,13 +83,10 @@ export default {
        return (d.getFullYear()==r[1]&&(d.getMonth()+1)==r[3]&&d.getDate()==r[4]);
     },
     isCardNo(card) { 
-      var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/; 
-      if(reg.test(card) === false) { 
-        return false; 
-      } 
+       var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+       return reg.test(card);
     },
-    checkPhone(){ 
-      var phone = document.getElementById('phone').value;
+    checkPhone(phone){ 
       if(!(/^1[3456789]\d{9}$/.test(phone))){ 
         return false; 
       } 
