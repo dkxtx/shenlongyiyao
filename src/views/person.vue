@@ -24,8 +24,9 @@
             <div class="box_text box_tip">欢迎使用e支付 点击可以放大哦</div>
           </div>
         </div>
-        <div class="box_footer" v-if="!is_open_pay">
-          <van-button size="small" icon="after-sale" class="open_btn_min" @click="openPay">开通e钱包</van-button>
+        <div class="box_footer" v-if="!is_open_pay" @click="openPay">
+          <van-button size="small" icon="after-sale" class="open_btn_min">开通e钱包</van-button>
+          <img class="right_icon" src="@/../images/icon／right@2x (2).png" alt="">
         </div>
         <div class="box_footer" v-else>
           <img class="money_icon" src="@/../images/money.png" alt />
@@ -194,8 +195,13 @@ export default {
 .open_btn_min {
   height: 28px;
   border-radius: 20px;
-  border-color: rgb(1, 98, 166);
+  border-width: 0;
   color: rgb(1, 98, 166);
   margin: 15px 10px 15px 0;
+}
+
+.right_icon {
+  width: 8px;
+  margin-left: auto;
 }
 </style>
