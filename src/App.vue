@@ -23,4 +23,11 @@ export default {
 /* .van-nav-bar .van-icon {
     color: #333333;
 } */
+.van-image-preview__overlay {
+  background: #fff;
+}
+.van-image-preview__image {
+  width: 300px;
+  height: 300px;
+}
 </style>
