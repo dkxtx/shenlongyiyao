@@ -3,6 +3,7 @@ import Router from 'vue-router'
 
 import person from '@/views/person'
 import bind from '@/views/bind'
+import verify from '@/views/verify'
 
 Vue.use(Router)
 
@@ -21,6 +22,11 @@ export default new Router({
     path: '/bind',
     name: 'bind',
     component: bind
+  },
+  {
+    path: '/verify',
+    name: 'verify',
+    component: verify
   },
   ]
 })
