@@ -56,7 +56,7 @@ export default {
       screenHeight: 0,
       userInfo: {},
       is_login: false,
-      is_open_pay: true,
+      is_open_pay: false,
       codeUrl: "",
     };
   },
