@@ -48,6 +48,7 @@
 import { ImagePreview, Toast } from "vant";
 // import QRCode from 'qrcode'
 import qrcodeVue from 'qrcode.vue'
+import axios from 'axios';
 
 export default {
   components: { qrcodeVue },
@@ -84,6 +85,18 @@ export default {
     // }
   },
   methods: {
+    // getQrcode() {
+    //   const _URL = window.URL || window.webkitURL
+    //     const img = new Image()
+    //     // img.src = _URL.createObjectURL(file)
+    //     img.onload = () => {
+    //       if (img.width !== img.height) {
+    //         this.$message.warning('上传比例为1:1的图片')
+    //         this.$refs.upload.clearFiles()
+    //         reject()
+    //       }
+    //     }
+    // },
     getToken(code) {
       if (localStorage.getItem('user_info') !== null) {
         this.is_login = true
@@ -93,9 +106,10 @@ export default {
       let data = {
         code: code
       }
-      console.log(code)
+      // Toast(code)
+      // console.log(code)
       axios.post('https://wa.cihangca.com:20010/sl/wx/login', data).then((response) => {
-        Toast(JSON.stringify(response))
+        // Toast(JSON.stringify(response))
         this.userInfo = response.data.data
         Toast('登录成功')
         this.is_login = true
