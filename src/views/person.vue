@@ -61,6 +61,10 @@ export default {
   },
   computed: {},
   created() {
+    if (localStorage.getItem('user_info') !== null) {
+      this.is_login = true
+      this.userInfo.user = JSON.parse(localStorage.getItem('user_info'))
+    }
     this.screenHeight = window.screen.availHeight - 50;
     if (window.location.href.indexOf('?') !== -1) {
       const url = window.location.href
@@ -72,18 +76,18 @@ export default {
     if (this.is_login) {
       this.userInfo.user = JSON.parse(localStorage.getItem('user_info'))
       if (this.userInfo.user.verified === true) {
-        this.is_open_pay = true
         this.codeUrl = '51062319880126641X'
+        this.is_open_pay = true
       }
     }
   },
   methods: {
     getToken(code) {
-      if (localStorage.getItem('user_info') !== null) {
-        this.is_login = true
-        this.userInfo.user = JSON.parse(localStorage.getItem('user_info'))
-        return
-      }
+      // if (localStorage.getItem('user_info') !== null) {
+      //   this.is_login = true
+      //   this.userInfo.user = JSON.parse(localStorage.getItem('user_info'))
+      //   return
+      // }
       let data = {
         code: code
       }

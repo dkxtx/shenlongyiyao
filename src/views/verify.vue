@@ -83,7 +83,7 @@ export default {
         }else{
           const user_info = JSON.parse(localStorage.getItem('user_info'))
           user_info.verified = true
-          localStorage.setItem(JSON.stringify(user_info),'user_info')
+          localStorage.setItem('user_info', JSON.stringify(user_info))
           this.$router.push({
             path:'person'
           })
