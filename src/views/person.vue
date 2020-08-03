@@ -19,7 +19,6 @@
             <div class="open_tip">暂未开通E钱包</div>
           </div>
           <div v-else>
-            <!-- <img class="qrcode" :src="codeUrl" alt @click="codeBig" /> -->
             <div class="qrcode" id="qrcode" @click="codeBig">
              <qrcode-vue :size="150" :value="codeUrl"  :bg-color="'#fff'" :fg-color="'#000'"/>
       </div>
@@ -46,7 +45,6 @@
 </template>
 <script>
 import { ImagePreview, Toast } from "vant";
-// import QRCode from 'qrcode'
 import qrcodeVue from 'qrcode.vue'
 import axios from 'axios';
 
@@ -78,25 +76,8 @@ export default {
         this.codeUrl = '51062319880126641X'
       }
     }
-
-    // if (this.userInfo.user.verified === true) {
-    //   this.is_open_pay = true
-    //   this.codeUrl = '51062319880126641X'
-    // }
   },
   methods: {
-    // getQrcode() {
-    //   const _URL = window.URL || window.webkitURL
-    //     const img = new Image()
-    //     // img.src = _URL.createObjectURL(file)
-    //     img.onload = () => {
-    //       if (img.width !== img.height) {
-    //         this.$message.warning('上传比例为1:1的图片')
-    //         this.$refs.upload.clearFiles()
-    //         reject()
-    //       }
-    //     }
-    // },
     getToken(code) {
       if (localStorage.getItem('user_info') !== null) {
         this.is_login = true
@@ -107,7 +88,6 @@ export default {
         code: code
       }
       // Toast(code)
-      // console.log(code)
       axios.post('https://wa.cihangca.com:20010/sl/wx/login', data).then((response) => {
         // Toast(JSON.stringify(response))
         this.userInfo = response.data.data
@@ -118,7 +98,6 @@ export default {
       }).catch((error) => {
         Toast(`登录失败：${JSON.stringify(error)}`)
       })
-      // Toast(code)
     },
     login() {
       if (!this.is_login) {
