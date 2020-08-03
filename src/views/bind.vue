@@ -64,17 +64,32 @@ export default {
         return Toast('请输入正确的手机号码')
       }
       Toast.loading({message: '加载中...',forbidClick: true,});
-      axios.post('https://wa.cihangca.com:20010/sl/open', this.query).then((response) => {
+      // axios.post('https://wa.cihangca.com:20010/sl/open', this.query).then((response) => {
+      //   Toast.clear()
+      //   const data = response.data
+      //   if (data.code !== 200) {
+      //     Toast(data.msg)
+      //   }
+      // }).catch((error) => {
+      //     Toast.clear()
+      //     Toast(JSON.stringify(error))
+      //     console.log(error)
+      // })
+      axios.post('http://118.190.56.19:30000/sl/sign', this.query).then((response) => {
         Toast.clear()
         const data = response.data
         if (data.code !== 200) {
           Toast(data.msg)
+        }else{
+          this.$router.push({
+            path:'verify'
+          })
         }
       }).catch((error) => {
           Toast.clear()
           Toast(JSON.stringify(error))
           console.log(error)
-        })
+      })
     },
      strDateTime(str){
        var r = str.match(/^(\d{1,4})(-|\/)(\d{1,2})\2(\d{1,2})$/);

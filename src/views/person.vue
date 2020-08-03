@@ -19,7 +19,10 @@
             <div class="open_tip">暂未开通E钱包</div>
           </div>
           <div v-else>
-            <img class="qrcode" :src="codeUrl" alt @click="codeBig" />
+            <!-- <img class="qrcode" :src="codeUrl" alt @click="codeBig" /> -->
+            <div class="qrcode" id="qrcode" @click="codeBig">
+             <qrcode-vue :size="150" :value="codeUrl"  :bg-color="'#fff'" :fg-color="'#000'"/>
+      </div>
             <div class="box_text box_tip">欢迎使用e支付 点击可以放大哦</div>
           </div>
         </div>
@@ -41,18 +44,19 @@
     </div>
   </div>
 </template>
-
 <script>
 import { ImagePreview, Toast } from "vant";
+// import QRCode from 'qrcode'
+import qrcodeVue from 'qrcode.vue'
 
 export default {
-  components: {},
+  components: { qrcodeVue },
   data() {
     return {
       screenHeight: 0,
       userInfo: {},
       is_login: false,
-      is_open_pay: false,
+      is_open_pay: true,
       codeUrl: "",
     };
   },
@@ -65,7 +69,20 @@ export default {
       this.getToken(code)
     }
   },
-  mounted() {},
+  mounted() {
+    if (this.is_login) {
+      this.userInfo.user = JSON.parse(localStorage.getItem('user_info'))
+      if (this.userInfo.user.verified === true) {
+        this.is_open_pay = true
+        this.codeUrl = '51062319880126641X'
+      }
+    }
+
+    // if (this.userInfo.user.verified === true) {
+    //   this.is_open_pay = true
+    //   this.codeUrl = '51062319880126641X'
+    // }
+  },
   methods: {
     getToken(code) {
       if (localStorage.getItem('user_info') !== null) {
@@ -76,6 +93,7 @@ export default {
       let data = {
         code: code
       }
+      console.log(code)
       axios.post('https://wa.cihangca.com:20010/sl/wx/login', data).then((response) => {
         Toast(JSON.stringify(response))
         this.userInfo = response.data.data
@@ -99,6 +117,9 @@ export default {
       }
     },
     openPay() {
+      if (!this.is_login) {
+        return Toast({message:'请登录账号'})
+      }
       this.$router.push({
         path: "/bind",
       });
@@ -185,7 +206,7 @@ export default {
   width: 150px;
   height: 150px;
   position: absolute;
-  bottom: 20%;
+  bottom: 30%;
   left: 50%;
   margin-left: -80px;
 }

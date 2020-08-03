@@ -7,7 +7,7 @@
       <van-number-keyboard :show="showKeyboard" @input="onInput" @delete="onDelete" @blur="showKeyboard = false"/>
     </div>
     <div style="margin-top:200px;">
-        <van-button block type="info" native-type="submit" style="background-color: rgb(1, 98, 166);width:150px;margin:auto;border-raduis:4px;height:40px">提 交</van-button>
+        <van-button block type="info" native-type="submit" style="background-color: rgb(1, 98, 166);width:150px;margin:auto;border-raduis:4px;height:40px" @click="onSubmit">提 交</van-button>
       </div>
   </div>
 </template>
@@ -53,7 +53,7 @@ export default {
     onInput(key) {
       this.value = (this.value + key).slice(0, 6);
       if (this.value.length === 6) {
-        this.errorInfo = '密码错误';
+        this.errorInfo = '';
       } else {
         this.errorInfo = '';
       }
@@ -62,31 +62,37 @@ export default {
       this.value = this.value.slice(0, this.value.length - 1);
     },
     onSubmit() {
-      console.log(this.query)
-      if (!this.strDateTime(this.query.start_date)) {
-        return Toast('请输入正确的证件签发日期，如：1900-01-01（有效期为永久填9999-12-30）');
+      console.log(this.value)
+      if (!this.value || this.value === '' || this.value === null || this.value === undefined) {
+        Toast({message:"请输入验证码"})
+        return
       }
-      if (!this.strDateTime(this.query.end_date)) {
-        return Toast('请输入正确的证件失效日期，如：1900-01-01（有效期为永久填9999-12-30）');
-      }
-      if (!this.isCardNo(this.query.idcard)) {
-        return Toast('请输入正确的身份证号码');
-      }
-      if (this.checkPhone(this.query.phone) === false) {
-        return Toast('请输入正确的手机号码')
+      if (this.value.length !== 6) {
+        Toast({message:"请输入正确的验证码"})
+        return
       }
       Toast.loading({message: '加载中...',forbidClick: true,});
-      axios.post('https://wa.cihangca.com:20010/sl/open', this.query).then((response) => {
+      const param = {
+        code:this.value
+      }
+       axios.post('http://118.190.56.19:30000/sl/scode/verify', param).then((response) => {
         Toast.clear()
         const data = response.data
         if (data.code !== 200) {
           Toast(data.msg)
+        }else{
+          const user_info = JSON.parse(localStorage.getItem('user_info'))
+          user_info.verified = true
+          localStorage.setItem(JSON.stringify(user_info),'user_info')
+          this.$router.push({
+            path:'person'
+          })
         }
       }).catch((error) => {
           Toast.clear()
           Toast(JSON.stringify(error))
-          console.log(error)
-        })
+      })
+          
     },
      strDateTime(str){
        var r = str.match(/^(\d{1,4})(-|\/)(\d{1,2})\2(\d{1,2})$/);
