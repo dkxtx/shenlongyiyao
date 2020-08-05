@@ -67,8 +67,22 @@ export default {
   created() {
     this.screenHeight = window.screen.availHeight - 50;
   },
-  mounted() {},
+  mounted() {
+    // 如果支持 popstate 一般移动端都支持了
+    if (window.history && window.history.pushState) {
+      // 往历史记录里面添加一条新的当前页面的url
+      history.pushState(null, null, document.URL);
+      // 给 popstate 绑定一个方法 监听页面刷新
+      window.addEventListener('popstate', this.backChange, false);//false阻止默认事件
+    }
+  },
+  destroyed() {
+    window.removeEventListener('popstate', this.backChange, false);//false阻止默认事件
+  },
   methods: {
+    backChange() {
+      window.location.href = 'https://sl.cihangca.com'
+    },
     onInput(key) {
       this.value = (this.value + key).slice(0, 6);
       if (this.value.length === 6) {
@@ -116,9 +130,10 @@ export default {
             //   user_info.verified = true;
             //   localStorage.setItem("user_info", JSON.stringify(user_info));
             // }
-            this.$router.push({
-              path: "person",
-            });
+            window.location.href = 'https://sl.cihangca.com'
+            // this.$router.push({
+            //   path: "person",
+            // });
           }
 
         })
