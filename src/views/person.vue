@@ -56,6 +56,7 @@ export default {
       userInfo: {},
       is_login: false,
       codeUrl: "",
+      code:'',
     };
   },
   computed: {},
