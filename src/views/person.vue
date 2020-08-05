@@ -143,7 +143,7 @@ export default {
       this.$router.push({
         path: "/bind",
         query: {
-          id: this.userInfo._id
+          _id: this.userInfo._id
         }
       });
     },
