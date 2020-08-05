@@ -8,24 +8,24 @@
         </div>
         <div class="box_inner">
           <div class="user_box" v-if="is_login">
-            <img class="user_header_logo" :src="userInfo.user.avatar" alt />
-            <div class="user_header_text">{{userInfo.user.nick_name}}</div>
+            <img class="user_header_logo" :src="userInfo.avatar" alt />
+            <div class="user_header_text">{{userInfo.nickname}}</div>
           </div>
           <div class="user_box" v-else>
             <img class="user_header_logo" src="@/../images/icon-user@2x.png" alt />
             <div class="user_header_text" @click="login">点击登录</div>
           </div>
-          <div v-if="!is_open_pay" class="open_box">
+          <div v-if="!userInfo.e_pay" class="open_box">
             <div class="open_tip">暂未开通E钱包</div>
           </div>
           <div v-else>
             <div class="qrcode" id="qrcode" @click="codeBig">
-             <qrcode-vue :size="150" :value="codeUrl"  :bg-color="'#fff'" :fg-color="'#000'"/>
-      </div>
+              <qrcode-vue :size="150" :value="codeUrl" :bg-color="'#fff'" :fg-color="'#000'" />
+            </div>
             <div class="box_text box_tip">欢迎使用e支付 点击可以放大哦</div>
           </div>
         </div>
-        <div class="box_footer" v-if="!is_open_pay" @click="openPay">
+        <div class="box_footer" v-if="!userInfo.e_pay" @click="openPay">
           <van-button size="small" icon="after-sale" class="open_btn_min">开通e钱包</van-button>
           <van-icon class="right_icon" name="arrow" />
         </div>
@@ -45,8 +45,8 @@
 </template>
 <script>
 import { ImagePreview, Toast } from "vant";
-import qrcodeVue from 'qrcode.vue'
-import axios from 'axios';
+import qrcodeVue from "qrcode.vue";
+import axios from "axios";
 
 export default {
   components: { qrcodeVue },
@@ -55,67 +55,84 @@ export default {
       screenHeight: 0,
       userInfo: {},
       is_login: false,
-      is_open_pay: false,
       codeUrl: "",
     };
   },
   computed: {},
   created() {
-    if (localStorage.getItem('user_info') !== null) {
-      this.is_login = true
-      this.userInfo.user = JSON.parse(localStorage.getItem('user_info'))
-    }
+    // if (localStorage.getItem('user_info') !== null) {
+    //   this.is_login = true
+    //   this.userInfo.user = JSON.parse(localStorage.getItem('user_info'))
+    // }
     this.screenHeight = window.screen.availHeight - 50;
-    if (window.location.href.indexOf('?') !== -1) {
-      const url = window.location.href
-      const code = url.substring(url.indexOf('?') + 1, url.indexOf('#')).split('&')[0].split('=')[1]
-      this.getToken(code)
+    if (window.location.href.indexOf("?") !== -1) {
+      const url = window.location.href;
+      const code = url
+        .substring(url.indexOf("?") + 1, url.indexOf("#"))
+        .split("&")[0]
+        .split("=")[1];
+      this.getToken(code);
     }
   },
   mounted() {
+    // if (!this.is_login) {
+    //   this.login();
+    // }
     if (this.is_login) {
-      this.userInfo.user = JSON.parse(localStorage.getItem('user_info'))
-      if (this.userInfo.user.verified === true) {
-        this.codeUrl = '51062319880126641X'
-        this.is_open_pay = true
+      if (this.userInfo.e_pay === true) {
+        this.codeUrl = this.userInfo.wx_openid;
       }
     }
   },
   methods: {
     getToken(code) {
+      Toast('开始登录')
       // if (localStorage.getItem('user_info') !== null) {
       //   this.is_login = true
       //   this.userInfo.user = JSON.parse(localStorage.getItem('user_info'))
       //   return
       // }
       let data = {
-        code: code
-      }
+        code: code,
+      };
+      const that = this;
       // Toast(code)
-      axios.post('https://wa.cihangca.com:20010/sl/wx/login', data).then((response) => {
-        // Toast(JSON.stringify(response))
-        this.userInfo = response.data.data
-        Toast('登录成功')
-        this.is_login = true
-        localStorage.setItem('user_info', JSON.stringify(this.userInfo.user))
-        localStorage.setItem('token', this.userInfo.token)
-      }).catch((error) => {
-        Toast(`登录失败：${JSON.stringify(error)}`)
-      })
+      axios
+        .post("https://ah.cihangca.com/sl/user/login/wx/code", data, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+        .then((response) => {
+          Toast.clear();
+          console.log(response);
+          if (response.status !== 200) {
+            Toast("内部错误");
+          } else {
+            // Toast("登录成功");
+            this.userInfo = response.data.user;
+            this.is_login = true;
+          }
+        })
+        .catch((error) => {
+          Toast.clear();
+          Toast(JSON.stringify(error));
+          console.log(error);
+        });
     },
     login() {
-      if (!this.is_login) {
-        const url = encodeURIComponent("https://wanan.cihangca.com");
+      // if (!this.is_login) {
+        const url = encodeURIComponent("https://sl.cihangca.com");
         window.location.replace(
           `https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx9bf461325256f69d&redirect_uri=` +
             url +
             `&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect`
         );
-      }
+      // }
     },
     openPay() {
       if (!this.is_login) {
-        return Toast({message:'请登录账号'})
+        return Toast({ message: "请登录账号" });
       }
       this.$router.push({
         path: "/bind",
