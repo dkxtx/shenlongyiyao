@@ -111,16 +111,16 @@ export default {
           if (response.status !== 200) {
             Toast("内部错误");
           } else {
-            const user_info = JSON.parse(localStorage.getItem("user_info"));
-            if (user_info) {
-              user_info.verified = true;
-              localStorage.setItem("user_info", JSON.stringify(user_info));
-            }
+            // const user_info = JSON.parse(localStorage.getItem("user_info"));
+            // if (user_info) {
+            //   user_info.verified = true;
+            //   localStorage.setItem("user_info", JSON.stringify(user_info));
+            // }
             this.$router.push({
               path: "person",
             });
           }
-          
+
         })
         .catch((error) => {
           Toast.clear();
