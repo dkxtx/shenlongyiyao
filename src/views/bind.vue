@@ -81,6 +81,7 @@ export default {
         end_date: "",
         idcard: "",
         phone: "",
+        _id: this.$route.query._id,
       },
       //  query: {
       //   name: "test",
@@ -125,7 +126,7 @@ export default {
         })
         .then((response) => {
           Toast.clear();
-          console.log(response)
+          console.log(response);
           if (response.status !== 200) {
             Toast("内部错误");
           } else {
