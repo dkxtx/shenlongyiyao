@@ -67,11 +67,17 @@ export default {
     this.screenHeight = window.screen.availHeight - 50;
     if (window.location.href.indexOf("?") !== -1) {
       const url = window.location.href;
-      const code = url
-        .substring(url.indexOf("?") + 1, url.indexOf("#"))
-        .split("&")[0]
-        .split("=")[1];
-      this.getToken(code);
+      if (url.indexOf("card_id") !== -1) {
+        this.login();
+      } else {
+        const code = url
+          .substring(url.indexOf("?") + 1, url.indexOf("#"))
+          .split("&")[0]
+          .split("=")[1];
+        this.getToken(code);
+      }
+    } else {
+      this.login();
     }
   },
   mounted() {
@@ -86,7 +92,7 @@ export default {
   },
   methods: {
     getToken(code) {
-      Toast('开始登录')
+      Toast("开始登录");
       // if (localStorage.getItem('user_info') !== null) {
       //   this.is_login = true
       //   this.userInfo.user = JSON.parse(localStorage.getItem('user_info'))
@@ -122,12 +128,12 @@ export default {
     },
     login() {
       // if (!this.is_login) {
-        const url = encodeURIComponent("https://sl.cihangca.com");
-        window.location.replace(
-          `https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx9bf461325256f69d&redirect_uri=` +
-            url +
-            `&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect`
-        );
+      const url = encodeURIComponent("https://sl.cihangca.com");
+      window.location.replace(
+        `https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx9bf461325256f69d&redirect_uri=` +
+          url +
+          `&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect`
+      );
       // }
     },
     openPay() {
