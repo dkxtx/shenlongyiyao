@@ -61,6 +61,9 @@ export default {
       // }
       value: "",
       showKeyboard: true,
+
+      // 验证成功后，刷新开户状态次数
+      refresh_time: 0,
     };
   },
   computed: {},
@@ -73,15 +76,15 @@ export default {
       // 往历史记录里面添加一条新的当前页面的url
       history.pushState(null, null, document.URL);
       // 给 popstate 绑定一个方法 监听页面刷新
-      window.addEventListener('popstate', this.backChange, false);//false阻止默认事件
+      window.addEventListener("popstate", this.backChange, false); //false阻止默认事件
     }
   },
   destroyed() {
-    window.removeEventListener('popstate', this.backChange, false);//false阻止默认事件
+    window.removeEventListener("popstate", this.backChange, false); //false阻止默认事件
   },
   methods: {
     backChange() {
-      window.location.href = 'https://sl.cihangca.com'
+      window.location.href = "https://sl.cihangca.com";
     },
     onInput(key) {
       this.value = (this.value + key).slice(0, 6);
@@ -109,9 +112,10 @@ export default {
         Toast({ message: "请输入正确的验证码" });
         return;
       }
-      Toast.loading({ message: "加载中...", forbidClick: true });
+      Toast.loading({ message: "开通中...", forbidClick: true });
       const param = {
         code: this.value,
+        res_id: this.$route.query._id,
       };
       axios
         .post("https://ah.cihangca.com/sl/account/scode/verify", param, {
@@ -125,23 +129,46 @@ export default {
           if (response.status !== 200) {
             Toast("内部错误");
           } else {
-            // const user_info = JSON.parse(localStorage.getItem("user_info"));
-            // if (user_info) {
-            //   user_info.verified = true;
-            //   localStorage.setItem("user_info", JSON.stringify(user_info));
-            // }
-            window.location.href = 'https://sl.cihangca.com'
-            // this.$router.push({
-            //   path: "person",
-            // });
+            // 获取开通情况，确保开通成功后返回首页
+            this.loadOpenQuery(data.user_id);
           }
-
         })
         .catch((error) => {
           Toast.clear();
-          // Toast(JSON.stringify(error));
+          Toast(error.response.data.error);
         });
     },
+
+    // 查询开户状态
+    loadOpenQuery(user_id) {
+      if (this.refresh_time > 10) {
+        Toast.clear();
+        Toast("开户认证中，请稍后查询开户结果！");
+      } else {
+        axios
+          .post(
+            "https://ah.cihangca.com/sl/account/open/query",
+            { _id: user_id },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          )
+          .then((res) => {
+            this.refresh_time += 1;
+            if (res.data.open_status == 1) {
+              this.loadOpenQuery();
+            } else if (res.data.open_status == 2) {
+              window.location.href = "https://sl.cihangca.com";
+            }
+          })
+          .catch((error) => {
+            Toast(error.response.data.error);
+          });
+      }
+    },
+
     strDateTime(str) {
       var r = str.match(/^(\d{1,4})(-|\/)(\d{1,2})\2(\d{1,2})$/);
       if (r == null) return false;

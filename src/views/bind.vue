@@ -66,13 +66,17 @@
 </template>   
 
 <script>
-import { Toast } from "vant";
+import { Toast, Dialog, Field } from "vant";
 import axios from "axios";
 
 export default {
   components: {},
   data() {
     return {
+      // test
+      show: false,
+      amount: "",
+
       screenHeight: 0,
       query: {
         name: "",
@@ -81,7 +85,8 @@ export default {
         end_date: "",
         idcard: "",
         phone: "",
-        _id: this.$route.query._id,
+        // _id: this.$route.query._id,
+        _id: "5f3096b6f450ed76e0072cdb",
       },
       //  query: {
       //   name: "test",
@@ -103,15 +108,15 @@ export default {
       // 往历史记录里面添加一条新的当前页面的url
       history.pushState(null, null, document.URL);
       // 给 popstate 绑定一个方法 监听页面刷新
-      window.addEventListener('popstate', this.backChange, false);//false阻止默认事件
+      window.addEventListener("popstate", this.backChange, false); //false阻止默认事件
     }
   },
   destroyed() {
-    window.removeEventListener('popstate', this.backChange, false);//false阻止默认事件
+    window.removeEventListener("popstate", this.backChange, false); //false阻止默认事件
   },
   methods: {
     backChange() {
-      window.location.href = 'https://sl.cihangca.com'
+      window.location.href = "https://sl.cihangca.com";
     },
     onSubmit() {
       console.log(this.query);
@@ -139,21 +144,20 @@ export default {
           },
         })
         .then((response) => {
-          Toast.clear();
-          console.log(response);
           if (response.status !== 200) {
             Toast("内部错误");
           } else {
-            Toast("验证码吗发送成功，请查收！");
+            Toast("验证码发送成功，请查收！");
             this.$router.push({
               path: "verify",
+              query: {
+                _id: response.data.open_res._id,
+              },
             });
           }
         })
         .catch((error) => {
-          Toast.clear();
-          Toast(JSON.stringify(error));
-          console.log(error);
+          Toast(error.response.data.error);
         });
     },
     strDateTime(str) {
@@ -175,6 +179,10 @@ export default {
         return false;
       }
     },
+
+    // 充值测试方法
+    rechargeTest() {},
+    testEnsure() {},
   },
 };
 </script>

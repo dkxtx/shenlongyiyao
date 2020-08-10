@@ -25,13 +25,16 @@
             <div class="box_text box_tip">欢迎使用e支付 点击可以放大哦</div>
           </div>
         </div>
-        <div class="box_footer" v-if="!userInfo.e_pay" @click="openPay">
+        <div class="box_footer" v-if="userInfo.e_pay == 0" @click="openPay">
           <van-button size="small" icon="after-sale" class="open_btn_min">开通e钱包</van-button>
           <van-icon class="right_icon" name="arrow" />
         </div>
         <div class="box_footer" v-else>
-          <img class="money_icon" src="@/../images/money.png" alt />
-          <div class="box_text">零钱</div>
+          <div class="balance">
+            <img class="money_icon" src="@/../images/money.png" alt />
+            <div class="box_text">零钱：{{balance / 100}}</div>
+          </div>
+          <div class="recharge" @click="recharge_show_action">充值</div>
         </div>
       </div>
     </div>
@@ -41,10 +44,26 @@
         <div class="small_box_title">城乡居民社保医保缴费</div>
       </div>
     </div>
+
+    <van-dialog
+      v-model="recharge_show"
+      title="请输入充值金额"
+      @confirm="recharge_ensure"
+      show-cancel-button
+      confirmButtonColor="#0162A6"
+    >
+      <van-field
+        v-model="recharge_amount"
+        label-align="right"
+        type="number"
+        label="充值金额:"
+        placeholder="请输入金额"
+      />
+    </van-dialog>
   </div>
 </template>
 <script>
-import { ImagePreview, Toast } from "vant";
+import { ImagePreview, Toast, Dialog, Field } from "vant";
 import qrcodeVue from "qrcode.vue";
 import axios from "axios";
 
@@ -56,7 +75,12 @@ export default {
       userInfo: {},
       is_login: false,
       codeUrl: "",
-      code:'',
+      code: "",
+      balance: 0,
+
+      // 充值相关
+      recharge_show: false,
+      recharge_amount: "",
     };
   },
   computed: {},
@@ -93,7 +117,7 @@ export default {
   },
   methods: {
     getToken(code) {
-      Toast("开始登录");
+      // Toast("开始登录");
       // if (localStorage.getItem('user_info') !== null) {
       //   this.is_login = true
       //   this.userInfo.user = JSON.parse(localStorage.getItem('user_info'))
@@ -116,15 +140,20 @@ export default {
           if (response.status !== 200) {
             Toast("内部错误");
           } else {
-            // Toast("登录成功");
             this.userInfo = response.data.user;
             this.is_login = true;
+            // 判断是否开户成功
+            if (parseInt(this.userInfo.e_pay) == 2) {
+              // 查询余额
+              this.loadBalance();
+            } else if (parseInt(this.userInfo.e_pay) == 1) {
+              // 查询开户状态
+              this.loadOpenQuery();
+            }
           }
         })
         .catch((error) => {
-          Toast.clear();
-          Toast(JSON.stringify(error));
-          console.log(error);
+          Toast(error.response.data.error);
         });
     },
     login() {
@@ -144,8 +173,8 @@ export default {
       this.$router.push({
         path: "/bind",
         query: {
-          _id: this.userInfo._id
-        }
+          _id: this.userInfo._id,
+        },
       });
     },
     payMedical() {
@@ -158,6 +187,78 @@ export default {
         showIndex: false,
         loop: false,
       });
+    },
+
+    // 查询开户状态
+    loadOpenQuery() {
+      axios
+        .post(
+          "https://ah.cihangca.com/sl/account/open/query",
+          { _id: this.userInfo._id },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((res) => {
+          if (res.data.open_status == 1) {
+            this.loadOpenQuery();
+          } else if (res.data.open_status == 2) {
+            this.loadBalance();
+          }
+        })
+        .catch((error) => {
+          Toast(error.response.data.error);
+        });
+    },
+
+    // 刷新余额
+    loadBalance() {
+      axios
+        .post(
+          "https://ah.cihangca.com/sl/account/balance",
+          { _id: this.userInfo._id },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((res) => {
+          this.balance = parseInt(res.data.balance);
+        })
+        .catch((error) => {
+          Toast(error.response.data.error);
+        });
+    },
+
+    // 充值相关
+    recharge_show_action() {
+      this.recharge_show = true;
+    },
+    recharge_ensure() {
+      if (this.recharge_amount <= 0) {
+        Toast("请输入正确的充值金额");
+      } else {
+        const final_amount = parseInt(this.recharge_amount * 100);
+        axios
+          .post(
+            "https://ah.cihangca.com/sl/account/recharge",
+            { _id: this.userInfo._id, amount: final_amount },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          )
+          .then((res) => {
+            this.loadBalance();
+          })
+          .catch((error) => {
+            Toast(error.response.data.error);
+          });
+      }
     },
   },
 };
@@ -238,10 +339,12 @@ export default {
 .box_footer {
   position: absolute;
   bottom: 0;
+  height: 50px;
   width: 90%;
   border-top: 1px solid #d8d8d8;
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   align-items: center;
 }
 
@@ -321,5 +424,22 @@ export default {
   font-family: PingFangSC-Regular, PingFang SC;
   font-weight: 400;
   color: #fff;
+}
+
+.recharge {
+  width: 60px;
+  height: 35px;
+  background-color: rgb(1, 98, 166);
+  line-height: 35px;
+  font-size: 14px;
+  text-align: center;
+  color: white;
+  border-radius: 4px;
+}
+
+.balance {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 </style>
