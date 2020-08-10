@@ -3,8 +3,14 @@
     <div class="box">
       <div class="box_all">
         <div class="box_header">
-          <img class="logo" src="@/../images/logo.jpg" alt />
-          <div class="box_text">神龙医药</div>
+          <div class="box_header_left">
+            <img class="logo" src="@/../images/logo.jpg" alt />
+            <div class="box_header_left_text">神龙医药</div>
+          </div>
+          <div class="box_header_right">
+            <div class="box_header_right_button1" @click="qrcode_show_action">付款</div>
+            <div class="box_header_right_button">扫码</div>
+          </div>
         </div>
         <div class="box_inner">
           <div class="user_box" v-if="is_login">
@@ -15,7 +21,7 @@
             <img class="user_header_logo" src="@/../images/icon-user@2x.png" alt />
             <div class="user_header_text" @click="login">点击登录</div>
           </div>
-          <div v-if="!userInfo.e_pay" class="open_box">
+          <div v-if="userInfo.e_pay == 0" class="open_box">
             <div class="open_tip">暂未开通E钱包</div>
           </div>
           <div v-else>
@@ -60,6 +66,22 @@
         placeholder="请输入金额"
       />
     </van-dialog>
+
+    <van-dialog
+      v-model="qrcode_show"
+      title="二维码付款"
+      @confirm="qrcode_ensure"
+      show-cancel-button
+      confirmButtonColor="#0162A6"
+    >
+      <van-field
+        v-model="qrcode_amount"
+        label-align="right"
+        type="number"
+        label="付款金额:"
+        placeholder="请输入付款金额"
+      />
+    </van-dialog>
   </div>
 </template>
 <script>
@@ -81,6 +103,10 @@ export default {
       // 充值相关
       recharge_show: false,
       recharge_amount: "",
+
+      // 付款相关
+      qrcode_show: false,
+      qrcode_amount: "",
     };
   },
   computed: {},
@@ -241,6 +267,7 @@ export default {
       if (this.recharge_amount <= 0) {
         Toast("请输入正确的充值金额");
       } else {
+        Toast("充值中...");
         const final_amount = parseInt(this.recharge_amount * 100);
         axios
           .post(
@@ -253,11 +280,26 @@ export default {
             }
           )
           .then((res) => {
+            Toast.clear();
+            Toast("充值成功");
             this.loadBalance();
           })
           .catch((error) => {
+            Toast.clear();
             Toast(error.response.data.error);
           });
+      }
+    },
+
+    // 二维码付款
+    qrcode_show_action() {
+      this.qrcode_show = true;
+    },
+
+    qrcode_ensure() {
+      if (this.qrcode_amount <= 0) {
+        Toast("请输入正确的付款金额");
+      } else {
       }
     },
   },
@@ -291,6 +333,7 @@ export default {
   border-bottom: 1px solid #d8d8d8;
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   align-items: center;
 }
 
@@ -435,6 +478,48 @@ export default {
   text-align: center;
   color: white;
   border-radius: 4px;
+}
+
+.box_header_right_button {
+  width: 60px;
+  height: 35px;
+  background-color: rgb(1, 98, 166);
+  line-height: 35px;
+  font-size: 14px;
+  text-align: center;
+  color: white;
+  border-radius: 4px;
+}
+
+.box_header_right_button1 {
+  margin-right: 10px;
+  width: 60px;
+  height: 35px;
+  background-color: rgb(1, 98, 166);
+  line-height: 35px;
+  font-size: 14px;
+  text-align: center;
+  color: white;
+  border-radius: 4px;
+}
+
+.box_header_left {
+  display: flex;
+  flex-direction: row;
+  height: 50px;
+}
+
+.box_header_right {
+  display: flex;
+  flex-direction: row;
+}
+
+.box_header_left_text {
+  line-height: 50px;
+  font-size: 14px;
+  font-family: PingFangSC-Regular, PingFang SC;
+  font-weight: 400;
+  color: rgba(102, 103, 104, 1);
 }
 
 .balance {

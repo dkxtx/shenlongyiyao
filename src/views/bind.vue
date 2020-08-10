@@ -85,8 +85,8 @@ export default {
         end_date: "",
         idcard: "",
         phone: "",
-        // _id: this.$route.query._id,
-        _id: "5f3096b6f450ed76e0072cdb",
+        _id: this.$route.query._id,
+        // _id: "5f3096b6f450ed76e0072cdb",
       },
       //  query: {
       //   name: "test",
