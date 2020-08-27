@@ -4,6 +4,7 @@ import Router from 'vue-router'
 import person from '@/views/person'
 import bind from '@/views/bind'
 import verify from '@/views/verify'
+import bindcard from '@/views/bindcard'
 
 Vue.use(Router)
 
@@ -27,6 +28,11 @@ export default new Router({
     path: '/verify',
     name: 'verify',
     component: verify
+  },
+  {
+    path: '/bindcard',
+    name: 'bindcard',
+    component: bindcard
   },
   ]
 })

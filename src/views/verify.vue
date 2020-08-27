@@ -158,7 +158,7 @@ export default {
           .then((res) => {
             this.refresh_time += 1;
             if (res.data.open_status == 1) {
-              this.loadOpenQuery();
+              this.loadOpenQuery(user_id);
             } else if (res.data.open_status == 2) {
               window.location.href = "https://sl.cihangca.com";
             }

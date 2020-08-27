@@ -51,6 +51,13 @@
       </div>
     </div>
 
+    <div class="small_box">
+      <div class="small_box_inner" @click="youhuiAction">
+        <img class="small_box_icon" src="@/../images/youhui.png" alt />
+        <div class="small_box_title">微信绑定会员卡支付享优惠</div>
+      </div>
+    </div>
+
     <van-dialog
       v-model="recharge_show"
       title="请输入充值金额"
@@ -206,6 +213,14 @@ export default {
     payMedical() {
       window.location.href =
         "https://fee.icbc.com.cn/servlet/H5OnlinePaymentServlet?f=ICBCqr&t=2&p=33&x=0&z=&i=UEoxNzIwMTcyMjFBU1NQMDQ0MDI=&n=5Z+O5Lmh5bGF5rCR56S+5L+d5Yy75L+d57y06LS5&l=mQWKPAS/KDVm8oZZT7aOdJXFOLaH7HmRY6SFDGMm+2U2dt6u8ouimD9XjKdGuJ4+kEKjL+RhKWWe";
+    },
+    youhuiAction(){
+      this.$router.push({
+        path: "/bindcard",
+        query: {
+          
+        },
+      });
     },
     codeBig() {
       ImagePreview({
